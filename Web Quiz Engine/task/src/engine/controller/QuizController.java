@@ -1,7 +1,8 @@
-package engine;
+package engine.controller;
 
 
 import com.google.gson.*;
+import engine.quiz.Question;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpHeaders;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api")

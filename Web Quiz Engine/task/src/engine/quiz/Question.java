@@ -1,41 +1,54 @@
-package engine;
+package engine.quiz;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 
-import javax.validation.constraints.*;
-import java.util.Arrays;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
+@Entity
+//@Table(name = "question")
 public class Question {
     @Expose
-    private final int id;
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private int id;
 
     @Expose
     @NotBlank
-    private final String title;
+    @Column
+    private String title;
 
     @Expose
     @NotBlank
-    private final String text;
+    @Column
+    private String text;
 
     @Expose
     @NotEmpty
     @Size(min = 2)
-    private final String[] options;
+    @Column
+    private String options;
 
     @Expose(serialize = false)
-    private final int[] answer;
+    @Column
+    private String answer;
 
     private final static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public Question(int id, String title, String text, String[] options, int[] answer) {
+    public Question(int id, String title, String text, String options, String answer) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.options = options;
         this.answer = answer;
+    }
+
+    public Question() {
     }
 
     public int getId() {
@@ -50,12 +63,32 @@ public class Question {
         return text;
     }
 
-    public String[] getOptions() {
+    public String getOptions() {
         return options;
     }
 
-    public int[] getAnswer() { return answer; }
+    public String getAnswer() { return answer; }
 
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setOptions(String options) {
+        this.options = options;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
 
     // Helper classes
     public static JsonObject getJsonWithAnswer(Question question){
@@ -76,7 +109,7 @@ public class Question {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
-                ", options=" + Arrays.toString(options) +
+                ", options=" + options +
                 ", answer=" + answer +
                 '}';
     }
