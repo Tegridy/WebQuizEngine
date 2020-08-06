@@ -9,13 +9,16 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
-//@Table(name = "question")
+@Table(name = "questions")
+@SequenceGenerator(name="seq", initialValue=0, allocationSize = 1)
 public class Question {
     @Expose
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "seq")
     private int id;
 
     @Expose
@@ -31,16 +34,16 @@ public class Question {
     @Expose
     @NotEmpty
     @Size(min = 2)
-    @Column
-    private String options;
+    @ElementCollection
+    private List<String> options;
 
     @Expose(serialize = false)
-    @Column
-    private String answer;
+    @ElementCollection
+    private List<String> answer;
 
     private final static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public Question(int id, String title, String text, String options, String answer) {
+    public Question(int id, String title, String text, List<String> options,  List<String> answer) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -63,11 +66,11 @@ public class Question {
         return text;
     }
 
-    public String getOptions() {
+    public List<String> getOptions() {
         return options;
     }
 
-    public String getAnswer() { return answer; }
+    public List<String> getAnswer() { return answer; }
 
 
     public void setId(int id) {
@@ -82,11 +85,11 @@ public class Question {
         this.text = text;
     }
 
-    public void setOptions(String options) {
+    public void setOptions( List<String> options) {
         this.options = options;
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer( List<String> answer) {
         this.answer = answer;
     }
 

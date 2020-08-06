@@ -56,8 +56,6 @@ topics:
     theory_id: 6854
   - title: Postman
     theory_id: 8512
-  - title: Computer programming
-    theory_id: 8739
   - title: IDE
     theory_id: 3805
   - title: Introduction to Spring Boot
@@ -223,12 +221,12 @@ topics:
     theory_id: 6989
   - title: Data and object mapping
     theory_id: 8262
+  - title: Introduction to databases
+    theory_id: 8497
   - title: What is SQL
     theory_id: 7054
   - title: Object-Relational Mapping(ORM)
     theory_id: 8312
-  - title: Introduction to databases
-    theory_id: 8497
   - title: JPA Relationships
     theory_id: 8936
   - title: H2 database
