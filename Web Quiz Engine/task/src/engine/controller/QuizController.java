@@ -3,17 +3,19 @@ package engine.controller;
 
 import com.google.gson.*;
 import engine.quiz.Question;
+import engine.quiz.User;
 import engine.service.QuizService;
+import engine.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,14 +24,16 @@ import java.util.List;
 public class QuizController {
 
     private final HttpHeaders headers = new HttpHeaders();
-    // private static final ArrayList<JsonObject> listOfQuestions = new ArrayList<>();
-    // private final static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-    // private static int id = 0;
-    private QuizService quizService;
+    private final QuizService quizService;
+    private final UserService userService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @Autowired
-    public QuizController(QuizService quizService) {
+    public QuizController(QuizService quizService, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.quizService = quizService;
+        this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     private final String WRONG_ANSWER = "{\"success\":false,\"feedback\":\"Wrong answer! Please, try again.\"}";
@@ -46,15 +50,8 @@ public class QuizController {
 
         quizService.saveQuestion(question);
 
-//        JsonObject questToList = Question.getJsonWithAnswer(question);
-//        questToList.addProperty("id", id);
-//
-//        listOfQuestions.add(questToList);
-
         JsonObject responseQuest = Question.getJasonWithoutAnswer(question);
-//        responseQuest.addProperty("id", id);
-//
-//        id++;
+
         return new ResponseEntity<>(responseQuest, headers, HttpStatus.OK);
     }
 
@@ -70,6 +67,11 @@ public class QuizController {
         JsonObject responseQuest = Question.getJasonWithoutAnswer(result);
 
         return new ResponseEntity<>(responseQuest, headers, HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<HttpStatus> deleteQuiz(){
+        return null;
     }
 
     @GetMapping("/quizzes")
@@ -99,10 +101,6 @@ public class QuizController {
         }
 
         String json;
-//        JsonArray answer1 = answer.get("answer").getAsJsonArray();
-//        JsonArray question = Question.getJsonWithAnswer(listOfQuestions.get(id)).has("answer")
-//                ? Question.getJsonWithAnswer(listOfQuestions.get(id)).get("answer").getAsJsonArray() : new JsonArray();
-
         String answer1 = answer.get("answer").getAsJsonArray().toString();
         String question = Question.getJsonWithAnswer(listOfQuestions.get(id)).has("answer")
                 ? Question.getJsonWithAnswer(listOfQuestions.get(id)).get("answer").toString().replaceAll("\"", "") : "";
@@ -129,4 +127,31 @@ public class QuizController {
         System.out.println(res.toString());
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
+    @PostMapping("/register")
+    private ResponseEntity<JsonObject> registerUser(@Valid @RequestBody User user){
+
+        User foundUser = userService.findByEmail(user.getEmail());
+        JsonObject jsonUser = new JsonObject();
+
+        if (foundUser == null) {
+            user.setPassword(
+                    bCryptPasswordEncoder.encode(user.getPassword())
+            );
+            userService.saveUser(user);
+
+            jsonUser.addProperty("email", user.getEmail());
+
+            return new ResponseEntity<>(jsonUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(jsonUser, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/quizzes/{id}")
+    public void deleteQuiz(@PathVariable int id) {
+       userService.deleteById(id);
+    }
+
+
 }

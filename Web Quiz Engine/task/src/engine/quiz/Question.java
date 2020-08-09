@@ -43,7 +43,7 @@ public class Question {
 
     private final static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public Question(int id, String title, String text, List<String> options,  List<String> answer) {
+    public Question( String title, String text, List<String> options,  List<String> answer) {
         this.id = id;
         this.title = title;
         this.text = text;

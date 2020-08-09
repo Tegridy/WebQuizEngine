@@ -1,6 +1,7 @@
 package engine.service;
 
 import engine.quiz.Question;
+import engine.quiz.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
